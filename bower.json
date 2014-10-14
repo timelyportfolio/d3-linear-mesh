@@ -1,0 +1,31 @@
+{
+  "name": "linear-mesh",
+  "main": "linear-mesh.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/dandehavilland/d3-linear-mesh",
+  "authors": [
+    "Dan de Havilland <dan@dandehavilland.com>"
+  ],
+  "description": "Custom D3 mesh layout. Handles cyclic references with node duplication in the view",
+  "moduleType": [
+    "amd"
+  ],
+  "directory": "lib",
+  "keywords": [
+    "d3",
+    "mesh"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.4.12",
+    "requirejs": "~2.1.15"
+  }
+}

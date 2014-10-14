@@ -1,4 +1,4 @@
-// module.exports = (function() {
+define(function() {
 
   /**
     Represents a POI.
@@ -235,5 +235,5 @@
     return Mesh;
   })(Point, Link);
 
-//   return Mesh;
-// })();
+  return Mesh;
+});
