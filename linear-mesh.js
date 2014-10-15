@@ -206,7 +206,8 @@ define(['./lib/jquery/dist/jquery'], function() {
       nodeSpacingY: 50,
       nodePadding: 10,
       nodeWidth: 100,
-      maxNodeHeight: 250
+      maxNodeHeight: 250,
+      minNodeHeight: 20
     };
 
     function Mesh(data, opts) {
@@ -298,11 +299,10 @@ define(['./lib/jquery/dist/jquery'], function() {
       });
 
       // set node height range
-      this.nodeHeight = d3
-        .scale
+      this.nodeHeight = d3.scale
         .linear()
         .domain([0, maxCount])
-        .range([0, this.opts.maxNodeHeight]);
+        .range([this.opts.minNodeHeight, this.opts.maxNodeHeight]);
     };
 
     Mesh.prototype.recalculatePositions = function() {

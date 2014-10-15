@@ -2,10 +2,11 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
   var width = 1200,
     height = 1000,
     nodeWidth = 100,
-    maxNodeHeight = 300,
+    maxNodeHeight = 250,
+    minNodeHeight = 0,
     nodePadding = 10,
     nodeSpacingX = 100,
-    nodeSpacingY = 50,
+    nodeSpacingY = 25,
     mesh,
     svg,
     node,
@@ -14,6 +15,7 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
   mesh = new Mesh(window.data, {
     nodeWidth: nodeWidth,
     maxNodeHeight: maxNodeHeight,
+    minNodeHeight: minNodeHeight,
     nodePadding: nodePadding,
     nodeSpacingX: nodeSpacingX,
     nodeSpacingY: nodeSpacingY
@@ -65,9 +67,10 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
         d: function(link) { return link.path(); },
         fill: 'none',
         stroke: '#555',
-        'stroke-width': function(link) { return mesh.nodeHeight(link.value); }
+        'stroke-width': function(link) {
+          return mesh.nodeHeight(link.value);
+        }
       });
-
 
   node.append('rect')
     .attr({
