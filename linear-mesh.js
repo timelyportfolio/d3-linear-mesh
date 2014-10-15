@@ -192,7 +192,8 @@ define(['./lib/jquery/dist/jquery'], function() {
   var Mesh = (function(Point, Link) {
 
     var defaultOpts = {
-      nodeSpacing: 50,
+      nodeSpacingX: 50,
+      nodeSpacingY: 50,
       nodePadding: 10,
       nodeWidth: 100,
       maxNodeHeight: 250
@@ -300,7 +301,7 @@ define(['./lib/jquery/dist/jquery'], function() {
       // First: position all layers
       this.layers.forEach(function(layer, idx) {
         layer.position = {
-          x: (idx * _this.opts.nodeWidth) + (_this.opts.nodeSpacing * idx),
+          x: (idx * _this.opts.nodeWidth) + (_this.opts.nodeSpacingX * idx),
           y: 0
         };
       });
@@ -308,16 +309,23 @@ define(['./lib/jquery/dist/jquery'], function() {
       // Second: position all nodes
       this.layers.forEach(function(layer, layerIdx) {
         // filter out empty indexes
-        layer.nodes.filter(function(node) {
+        var nodes = layer.nodes.filter(function(node) {
           return node;
-        }).forEach(function(node, nodeIdx) {
-          var height = _this.nodeHeight(node.count());
+        });
+
+        nodes.forEach(function(node, nodeIdx) {
+          var height = _this.nodeHeight(node.count()),
+              previousNode = nodes[nodeIdx-1],
+              offset = previousNode ? previousNode.position.height : 0;
+
+
+
           node.position = {
             x: 0,
-            y: (nodeIdx * (height + _this.opts.nodeSpacing)),
+            y: (nodeIdx * (offset + _this.opts.nodeSpacingY)),
             width: _this.opts.nodeWidth,
             height: height,
-            gutter: _this.opts.nodeSpacing
+            gutter: _this.opts.nodeSpacingX
           };
           node.repositionLinks();
         });

@@ -4,7 +4,8 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
     nodeWidth = 100,
     maxNodeHeight = 300,
     nodePadding = 10,
-    nodeSpacing = 100,
+    nodeSpacingX = 100,
+    nodeSpacingY = 50,
     mesh,
     svg,
     node,
@@ -14,7 +15,8 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
     nodeWidth: nodeWidth,
     maxNodeHeight: maxNodeHeight,
     nodePadding: nodePadding,
-    nodeSpacing: nodeSpacing
+    nodeSpacingX: nodeSpacingX,
+    nodeSpacingY: nodeSpacingY
   });
 
   svg = d3.select("body")
@@ -23,8 +25,8 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
       .attr("height", height)
     .append("g")
       .attr({
-        x: nodeSpacing,
-        y: nodeSpacing
+        x: nodeSpacingX,
+        y: nodeSpacingY
       });
 
   layer = svg
