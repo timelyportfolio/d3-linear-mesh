@@ -4,7 +4,7 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
     nodeWidth = 100,
     maxNodeHeight = 300,
     nodePadding = 10,
-    nodeSpacing = 150,
+    nodeSpacing = 100,
     mesh,
     svg,
     node,

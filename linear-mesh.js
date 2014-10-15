@@ -22,6 +22,11 @@ define(['./lib/jquery/dist/jquery'], function() {
       this.sourceNode = sourceNode;
       this.targetNode = targetNode;
       this.value = value;
+
+      this.position = {
+        y0: 0,
+        y1: 0
+      };
     }
 
     Link.prototype.getSource = function() {
@@ -33,16 +38,18 @@ define(['./lib/jquery/dist/jquery'], function() {
     };
 
     Link.prototype.path = function() {
-      var s = this.sourceNode.position,
-          t = this.targetNode.position,
-          curvature = 0.75,
-          x0 = (s.x + s.width),
-          y0 = (s.y + s.height/2),
-          x1 = (s.x+s.width+s.gutter),
-          y1 = (t.y + t.height/2),
-          xi = d3.interpolateNumber(x0,x1),
-          xc0 = xi(curvature),
-          xc1 = xi(curvature);
+      var sourceNode = this.sourceNode,
+        targetNode = this.targetNode,
+        s = sourceNode.position,
+        t = targetNode.position,
+        curvature = 0.75,
+        x0 = (s.x + s.width),
+        y0 = this.position.y0,
+        x1 = (s.x+s.width+s.gutter),
+        y1 = this.position.y1,
+        xi = d3.interpolateNumber(x0,x1),
+        xc0 = xi(curvature),
+        xc1 = xi(curvature);
 
       return [
         // start coords
@@ -99,6 +106,32 @@ define(['./lib/jquery/dist/jquery'], function() {
       return links.reduce(function(sum, input) {
         return sum + input.value;
       }, 0);
+    };
+
+    /**
+      Set link positions using #count and link#value for context
+     */
+    Node.prototype.repositionLinks = function() {
+      var _this = this,
+        pos = this.position,
+        offset = 0;
+
+      // inputs, set y1
+      this.inputs.forEach(function(link) {
+        var cover = (link.value / _this.count()) * pos.height,
+            y1 = (pos.y + cover/2);
+        link.position.y1 = offset + y1;
+        offset += cover;
+      });
+
+      // outputs, set y0
+      offset = 0;
+      this.outputs.forEach(function(link) {
+        var cover = (link.value / _this.count()) * pos.height,
+            y0 = (pos.y + cover/2);
+        link.position.y0 = offset + y0;
+        offset += cover;
+      });
     };
 
     Node.prototype.valueOf = function() {
@@ -286,6 +319,7 @@ define(['./lib/jquery/dist/jquery'], function() {
             height: height,
             gutter: _this.opts.nodeSpacing
           };
+          node.repositionLinks();
         });
       });
     };
