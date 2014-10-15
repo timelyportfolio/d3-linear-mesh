@@ -51,6 +51,22 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
     .append('g')
       .attr('class', 'node');
 
+  links = node
+    .selectAll('.link')
+      .data(function(node) {
+        return node.outputs;
+      })
+      .enter()
+    .append('path')
+      .attr({
+        'class': 'link',
+        d: function(link) { return link.path(); },
+        fill: 'none',
+        stroke: '#555',
+        'stroke-width': function(link) { return mesh.nodeHeight(link.value); }
+      });
+
+
   node.append('rect')
     .attr({
       x: function(node) { return node.position.x; },
@@ -67,19 +83,4 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
     .text(function(node) {
       return node.point.name + ': ' + node.count();
     });
-
-  links = node
-    .selectAll('.link')
-      .data(function(node) {
-        return node.outputs;
-      })
-      .enter()
-    .append('path')
-      .attr({
-        'class': 'link',
-        d: function(link) { return link.path(); },
-        fill: 'none',
-        stroke: '#555',
-        'stroke-width': function(link) { return mesh.nodeHeight(link.value); }
-      });
 });
