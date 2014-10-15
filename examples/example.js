@@ -6,7 +6,8 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
     minNodeHeight = 0,
     nodePadding = 10,
     nodeSpacingX = 100,
-    nodeSpacingY = 25,
+    nodeSpacingY = 50,
+    nodeHeaderHeight = 25,
     mesh,
     svg,
     node,
@@ -72,20 +73,45 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
         }
       });
 
+  // node background
   node.append('rect')
     .attr({
+      'class': 'nodeBg',
       x: function(node) { return node.position.x; },
       y: function(node) { return node.position.y; },
       width: function(node) { return node.position.width; },
-      height:  function(node) { return mesh.nodeHeight(node.count()); },
+      height: function(node) { return mesh.nodeHeight(node.count()); },
     });
 
+  // header background
+  node.append('rect')
+    .attr({
+      'class': 'nodeHeader',
+      x: function(node) { return node.position.x; },
+      y: function(node) { return node.position.y - nodeHeaderHeight; },
+      width: function(node) { return node.position.width; },
+      height: nodeHeaderHeight
+    });
+
+
+  // header text
   node.append('text')
     .attr({
       x: function(node) { return node.position.x + nodePadding; },
-      y: function(node) { return node.position.y + (nodePadding * 2);}
+      y: function(node) { return node.position.y - nodeHeaderHeight/4;}
     })
     .text(function(node) {
-      return node.point.name + ': ' + node.count();
+      return node.point.name;
+    });
+
+  // visitor count text
+  node.append('text')
+    .attr({
+      'class': 'nodeCount',
+      x: function(node) { return node.position.x + nodePadding; },
+      y: function(node) { return node.position.y + (nodePadding * 5);}
+    })
+    .text(function(node) {
+      return node.count();
     });
 });

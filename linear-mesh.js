@@ -323,7 +323,7 @@ define(['./lib/jquery/dist/jquery'], function() {
           return node;
         });
 
-        var offset = 0;
+        var offset = _this.opts.nodeSpacingY;
 
         nodes.forEach(function(node, nodeIdx) {
           var height = _this.nodeHeight(node.count()),
