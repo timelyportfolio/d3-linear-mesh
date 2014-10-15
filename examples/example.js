@@ -1,10 +1,10 @@
 require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
-  var width = 800,
+  var width = 1200,
     height = 1000,
     nodeWidth = 100,
     maxNodeHeight = 300,
     nodePadding = 10,
-    nodeSpacing = 50,
+    nodeSpacing = 150,
     mesh,
     svg,
     node,
@@ -80,6 +80,6 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
         d: function(link) { return link.path(); },
         fill: 'none',
         stroke: '#555',
-        'stroke-width': function(link) { return link.weight; }
+        'stroke-width': function(link) { return mesh.nodeHeight(link.value); }
       });
 });

@@ -1,4 +1,4 @@
-define(['./lib/jquery/dist/jquery','./lib/lodash/dist/lodash'], function() {
+define(['./lib/jquery/dist/jquery'], function() {
 
   /**
     Represents a POI.
@@ -32,24 +32,27 @@ define(['./lib/jquery/dist/jquery','./lib/lodash/dist/lodash'], function() {
       return this.targetNode;
     };
 
-    Link.prototype.getValue = function() {
-      return this.value;
-    };
-
     Link.prototype.path = function() {
       var s = this.sourceNode.position,
           t = this.targetNode.position,
-          midPointX = (s.gutter/2);
+          curvature = 0.75,
+          x0 = (s.x + s.width),
+          y0 = (s.y + s.height/2),
+          x1 = (s.x+s.width+s.gutter),
+          y1 = (t.y + t.height/2),
+          xi = d3.interpolateNumber(x0,x1),
+          xc0 = xi(curvature),
+          xc1 = xi(curvature);
 
       return [
         // start coords
-        'M '+(s.x + s.width)+' '+(s.y + s.height/2),
+        'M '+x0+','+y0,
         // control point 1
-        'C'+(s.x+s.width+(s.gutter/2))+' '+(s.y + s.height/2),
+        'C'+xc0+','+y0,
         // control point 2
-        (s.x+s.width+(s.gutter/2))+' '+(t.y + t.height/2),
+        xc1+','+y1,
         // end coords
-        (s.x+s.width+s.gutter)+' '+(t.y + t.height/2)
+        x1+','+y1
       ].join(' ');
     };
 
@@ -57,7 +60,7 @@ define(['./lib/jquery/dist/jquery','./lib/lodash/dist/lodash'], function() {
       return {
         source: this.getSource(),
         target: this.getTarget(),
-        value: this.getValue()
+        value: this.value
       }
     };
 
@@ -94,7 +97,7 @@ define(['./lib/jquery/dist/jquery','./lib/lodash/dist/lodash'], function() {
       var links = this.inputs.length ? this.inputs : this.outputs;
 
       return links.reduce(function(sum, input) {
-        return sum + input.getValue();
+        return sum + input.value;
       }, 0);
     };
 
@@ -174,6 +177,7 @@ define(['./lib/jquery/dist/jquery','./lib/lodash/dist/lodash'], function() {
       });
 
       this.expand();
+      this.recalculateNodeSizes();
       this.recalculatePositions();
     }
 
@@ -236,7 +240,9 @@ define(['./lib/jquery/dist/jquery','./lib/lodash/dist/lodash'], function() {
       }
 
       expandLinks(data.links, 0);
+    };
 
+    Mesh.prototype.recalculateNodeSizes = function() {
       // set node heights
       var maxCount = 0;
       this.layers.forEach(function(layer) {
