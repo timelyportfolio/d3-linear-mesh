@@ -3,7 +3,7 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
     height = 1000,
     nodeWidth = 100,
     maxNodeHeight = 250,
-    minNodeHeight = 0,
+    minNodeHeight = 70,
     nodePadding = 10,
     nodeSpacingX = 100,
     nodeSpacingY = 50,
@@ -80,7 +80,8 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
       x: function(node) { return node.position.x; },
       y: function(node) { return node.position.y; },
       width: function(node) { return node.position.width; },
-      height: function(node) { return mesh.nodeHeight(node.count()); },
+      height: function(node) {
+        return node.position.height; },
     });
 
   // header background

@@ -302,7 +302,7 @@ define(['./lib/jquery/dist/jquery'], function() {
       this.nodeHeight = d3.scale
         .linear()
         .domain([0, maxCount])
-        .range([this.opts.minNodeHeight, this.opts.maxNodeHeight]);
+        .range([0, this.opts.maxNodeHeight]);
     };
 
     Mesh.prototype.recalculatePositions = function() {
@@ -335,7 +335,7 @@ define(['./lib/jquery/dist/jquery'], function() {
             x: 0,
             y: offset,
             width: _this.opts.nodeWidth,
-            height: height,
+            height: Math.max(_this.opts.minNodeHeight, height),
             gutter: _this.opts.nodeSpacingX
           };
           node.repositionLinks();
