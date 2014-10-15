@@ -1,4 +1,4 @@
-define(function() {
+define(['./lib/jquery/dist/jquery'], function() {
 
   /**
     Represents a POI.
@@ -103,7 +103,7 @@ define(function() {
   var Layer = (function(Node) {
     function Layer(depth) {
       this.depth = depth;
-      this.nodes = []
+      this.nodes = [];
     }
 
     Layer.prototype.addNode = function(index, node) {
@@ -120,9 +120,7 @@ define(function() {
 
     Layer.prototype.removeNode = function(node) {
       var indexOfNode = this.nodes.indexOf(node);
-      if (indexOfNode > -1) {
-        this.nodes = this.nodes.slice(0,indexOfNode).concat(this.nodes.slice(indexOfNode));
-      }
+      delete this.nodes[indexOfNode];
       return node;
     };
 
@@ -136,21 +134,42 @@ define(function() {
   })(Node);
 
   /**
-    Group of layers
+    Layout manager
    */
   var Mesh = (function(Point, Link) {
-    function Mesh(data) {
+
+    var defaultOpts = {
+      nodeSpacing: 50,
+      nodePadding: 10,
+      nodeWidth: 100,
+      nodeHeight: 100
+    };
+
+    function Mesh(data, opts) {
       this.layers = [];
-
       this.links = [];
-
       this.data = data;
+      this.opts = jQuery.extend({}, defaultOpts, opts);
 
       this.points = data.points.map(function(point, index) {
         point.index = index;
         return new Point(point);
       });
 
+      this.expand();
+
+      this.recalculatePositions();
+
+      /**
+        TODO: Work backwards through the layers looking for terminal points which can
+        then be merged
+       */
+      // var coalesce = function() {
+      //
+      // }
+    }
+
+    Mesh.prototype.expand = function() {
       var layers = this.layers,
           points = this.points
           links = this.links;
@@ -159,7 +178,7 @@ define(function() {
         Recursively iterate through the links and their children, creating a new
         layer for each depth, populating it with nodes.
       */
-      var expand = function(linkArr, depth) {
+      var expandLinks = function(linkArr, depth) {
         var sourceLayer = layers[depth],
             nextLevel = depth+1,
             targetLayer = layers[nextLevel];
@@ -204,22 +223,39 @@ define(function() {
 
           // process children
           if (linkAttrs.links) {
-            expand(linkAttrs.links, depth+1);
+            expandLinks(linkAttrs.links, depth+1);
           }
         });
       }
 
-      expand(data.links, 0);
+      expandLinks(data.links, 0);
+    };
 
 
-      /**
-        TODO: Work backwards through the layers looking for terminal points which can
-        then be merged
-       */
-      // var coalesce = function() {
-      //
-      // }
-    }
+    Mesh.prototype.recalculatePositions = function() {
+      var _this = this;
+
+      // First position all layers
+      this.layers.forEach(function(layer, idx) {
+        layer.position = {
+          x: (idx * _this.opts.nodeWidth) + (_this.opts.nodeSpacing * idx),
+          y: 0
+        };
+      });
+
+      // Second position all nodes
+      this.layers.forEach(function(layer, layerIdx) {
+        // filter out empty indexes
+        layer.nodes.filter(function(node) {
+          return node;
+        }).forEach(function(node, nodeIdx) {
+          node.position = {
+            x: 0,
+            y: (nodeIdx * (_this.opts.nodeHeight + _this.opts.nodeSpacing))
+          };
+        });
+      });
+    };
 
     /**
       Returns a POJO representation of the mesh

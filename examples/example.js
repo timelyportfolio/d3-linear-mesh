@@ -14,24 +14,28 @@ require(['../lib/d3/d3', '../linear-mesh'], function(d3, Mesh) {
       .attr("width", width)
       .attr("height", height)
     .append("g")
-      .attr("transform", "translate(100,100)");
+      .attr({
+        x: nodeSpacing,
+        y: nodeSpacing
+      });
 
   var layer = svg
     .selectAll('.layer')
       .data(mesh.layers)
       .enter()
     .append('g')
-      .attr('class', 'layer')
-      .attr('transform', function(d, idx) {
-        var x = (idx * nodeWidth) + (nodeSpacing * idx);
-        return 'translate('+x+',100)';
+      .attr({
+        'class': 'layer',
+        transform: function(layer, idx) {
+          return 'translate('+layer.position.x+','+layer.position.y+')';
+        }
       });
 
   var node = layer
     .selectAll('.node')
-      .data(function(d) {
-        // condense our array here - the indexes correspond to the initial Point index in the data so aren't necessarily 0-indexed
-        return d.nodes.filter(function(node) {
+      .data(function(layer) {
+        // compact our array here - the indexes correspond to the initial Point index in the data so aren't necessarily 0-indexed
+        return layer.nodes.filter(function(node) {
           return node;
         });
       })
@@ -41,19 +45,16 @@ require(['../lib/d3/d3', '../linear-mesh'], function(d3, Mesh) {
 
   node.append('rect')
     .attr({
-      transform: function(node, idx) {
-        var y = (idx * (nodeHeight + nodeSpacing));
-        node.position = {x: 0, y: y};
-        return 'translate(0, '+y+')';
-      },
+      x: function(node) { return node.position.x; },
+      y: function(node) { return node.position.y; },
       width: 100,
       height: 100
     });
 
   node.append('text')
-    .attr('transform', function(d, idx) {
-      var y = (idx * (nodeHeight + nodeSpacing)) + nodePadding * 2;
-      return 'translate('+nodePadding+', '+y+')';
+    .attr({
+      x: function(node) { return node.position.x + nodePadding; },
+      y: function(node) { return node.position.y + (nodePadding * 2);}
     })
     .text(function(node) {
       return node.point.name + ': ' + node.count();
