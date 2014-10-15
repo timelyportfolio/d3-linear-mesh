@@ -42,14 +42,14 @@ define(['./lib/jquery/dist/jquery'], function() {
         targetNode = this.targetNode,
         s = sourceNode.position,
         t = targetNode.position,
-        curvature = 0.75,
+        curvature = 0.5,
         x0 = (s.x + s.width),
         y0 = this.position.y0,
         x1 = (s.x+s.width+s.gutter),
         y1 = this.position.y1,
         xi = d3.interpolateNumber(x0,x1),
         xc0 = xi(curvature),
-        xc1 = xi(curvature);
+        xc1 = xi(1-curvature);
 
       return [
         // start coords
