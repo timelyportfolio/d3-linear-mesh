@@ -66,11 +66,7 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
       .attr({
         'class': 'link',
         d: function(link) { return link.path(); },
-        fill: 'none',
-        stroke: '#555',
-        'stroke-width': function(link) {
-          return mesh.nodeHeight(link.value);
-        }
+        fill: '#555'
       });
 
   // node background
@@ -80,8 +76,7 @@ require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
       x: function(node) { return node.position.x; },
       y: function(node) { return node.position.y; },
       width: function(node) { return node.position.width; },
-      height: function(node) {
-        return node.position.height; },
+      height: function(node) { return node.position.height; },
     });
 
   // header background

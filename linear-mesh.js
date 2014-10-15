@@ -42,24 +42,38 @@ define(['./lib/jquery/dist/jquery'], function() {
         targetNode = this.targetNode,
         s = sourceNode.position,
         t = targetNode.position,
-        curvature = 0.5,
+        curvature = 0.35,
         x0 = (s.x + s.width),
         y0 = this.position.y0,
         x1 = (s.x+s.width+s.gutter),
         y1 = this.position.y1,
         xi = d3.interpolateNumber(x0,x1),
         xc0 = xi(curvature),
-        xc1 = xi(1-curvature);
+        xc1 = xi(1-curvature),
+        y2 = this.position.y2,
+        y3 = this.position.y3;
 
       return [
-        // start coords
+        // top left
         'M '+x0+','+y0,
+        // curving to the right-hand node
         // control point 1
         'C'+xc0+','+y0,
         // control point 2
         xc1+','+y1,
-        // end coords
-        x1+','+y1
+        // top right
+        ' '+x1+','+y1,
+        // bottom right
+        'L '+x1+','+y2,
+        // curving back to the left-hand node
+        // control point 1
+        'C'+xc1+','+y2,
+        // control point 2
+        xc0+','+y3,
+        // bottom left
+        ' '+x0+','+y3,
+        // close the path
+        'Z'
       ].join(' ');
     };
 
@@ -119,8 +133,10 @@ define(['./lib/jquery/dist/jquery'], function() {
       // inputs, set y1
       this.inputs.forEach(function(link) {
         var cover = (link.value / _this.count()) * pos.height,
-            y1 = (pos.y + cover/2);
+            y1 = pos.y,
+            y2 = pos.y + cover;
         link.position.y1 = offset + y1;
+        link.position.y2 = offset + y2;
         offset += cover;
       });
 
@@ -128,8 +144,10 @@ define(['./lib/jquery/dist/jquery'], function() {
       offset = 0;
       this.outputs.forEach(function(link) {
         var cover = (link.value / _this.count()) * pos.height,
-            y0 = (pos.y + cover/2);
+            y0 = pos.y,
+            y3 = pos.y + cover;
         link.position.y0 = offset + y0;
+        link.position.y3 = offset + y3;
         offset += cover;
       });
     };
