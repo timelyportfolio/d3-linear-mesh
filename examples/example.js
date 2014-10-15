@@ -69,20 +69,10 @@ require(['../lib/d3/d3', '../linear-mesh'], function(d3, Mesh) {
     .append('path')
       .attr({
         'class': 'link',
-        d: function(link, idx) {
-          var sourceNode = link.sourceNode,
-              targetNode = link.targetNode;
-
-          return 'M '+nodeWidth+' '+(sourceNode.position.y + nodeHeight/2)+
-                 ' C'+(nodeWidth+nodeSpacing/2)+' '+(sourceNode.position.y + nodeHeight/2)+
-                 ' '+(nodeWidth+nodeSpacing/2)+' '+(targetNode.position.y + nodeHeight/2)+
-                 ' '+(nodeWidth+nodeSpacing)+' '+(targetNode.position.y + nodeHeight/2);
-        },
+        d: function(link) { return link.path(); },
         fill: 'none',
         stroke: '#555',
-        'stroke-width': function(d) {
-          return d.getValue();
-        }
+        'stroke-width': function(link) { return link.weight; }
       });
 
 });

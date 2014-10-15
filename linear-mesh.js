@@ -18,10 +18,11 @@ define(['./lib/jquery/dist/jquery'], function() {
     A link between two nodes
    */
   var Link = (function() {
-    function Link(sourceNode, targetNode, value) {
+    function Link(sourceNode, targetNode, value, weight) {
       this.sourceNode = sourceNode;
       this.targetNode = targetNode;
       this.value = value;
+      this.weight = weight;
     }
 
     Link.prototype.getSource = function() {
@@ -34,6 +35,23 @@ define(['./lib/jquery/dist/jquery'], function() {
 
     Link.prototype.getValue = function() {
       return this.value;
+    };
+
+    Link.prototype.path = function() {
+      var s = this.sourceNode.position,
+          t = this.targetNode.position,
+          midPointX = (s.gutter/2);
+
+      return [
+        // start coords
+        'M '+(s.x + s.width)+' '+(s.y + s.height/2),
+        // control point 1
+        'C'+(s.x+s.width+(s.gutter/2))+' '+(s.y + s.height/2),
+        // control point 2
+        (s.x+s.width+(s.gutter/2))+' '+(t.y + t.height/2),
+        // end coords
+        (s.x+s.width+s.gutter)+' '+(t.y + t.height/2)
+      ].join(' ');
     };
 
     Link.prototype.valueOf = function() {
@@ -157,16 +175,7 @@ define(['./lib/jquery/dist/jquery'], function() {
       });
 
       this.expand();
-
       this.recalculatePositions();
-
-      /**
-        TODO: Work backwards through the layers looking for terminal points which can
-        then be merged
-       */
-      // var coalesce = function() {
-      //
-      // }
     }
 
     Mesh.prototype.expand = function() {
@@ -181,7 +190,8 @@ define(['./lib/jquery/dist/jquery'], function() {
       var expandLinks = function(linkArr, depth) {
         var sourceLayer = layers[depth],
             nextLevel = depth+1,
-            targetLayer = layers[nextLevel];
+            targetLayer = layers[nextLevel],
+            weightRatio = this.opts.nodeHeight;
 
         // if we haven't yet worked at this depth, create a new layer
         if (sourceLayer == void 0) {
@@ -212,7 +222,7 @@ define(['./lib/jquery/dist/jquery'], function() {
           }
 
           // create the link
-          link = new Link(sourceNode, targetNode, linkAttrs.value);
+          link = new Link(sourceNode, targetNode, linkAttrs.value, );
           links.push(link);
 
           // assign the link to the inputs of the source node
@@ -231,11 +241,10 @@ define(['./lib/jquery/dist/jquery'], function() {
       expandLinks(data.links, 0);
     };
 
-
     Mesh.prototype.recalculatePositions = function() {
       var _this = this;
 
-      // First position all layers
+      // First: position all layers
       this.layers.forEach(function(layer, idx) {
         layer.position = {
           x: (idx * _this.opts.nodeWidth) + (_this.opts.nodeSpacing * idx),
@@ -243,7 +252,7 @@ define(['./lib/jquery/dist/jquery'], function() {
         };
       });
 
-      // Second position all nodes
+      // Second: position all nodes
       this.layers.forEach(function(layer, layerIdx) {
         // filter out empty indexes
         layer.nodes.filter(function(node) {
@@ -251,7 +260,10 @@ define(['./lib/jquery/dist/jquery'], function() {
         }).forEach(function(node, nodeIdx) {
           node.position = {
             x: 0,
-            y: (nodeIdx * (_this.opts.nodeHeight + _this.opts.nodeSpacing))
+            y: (nodeIdx * (_this.opts.nodeHeight + _this.opts.nodeSpacing)),
+            width: _this.opts.nodeWidth,
+            height: _this.opts.nodeHeight,
+            gutter: _this.opts.nodeSpacing
           };
         });
       });
