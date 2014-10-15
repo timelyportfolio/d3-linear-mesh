@@ -1,4 +1,4 @@
-define(['./lib/jquery/dist/jquery'], function() {
+define(['./lib/jquery/dist/jquery','./lib/lodash/dist/lodash'], function() {
 
   /**
     Represents a POI.
@@ -18,11 +18,10 @@ define(['./lib/jquery/dist/jquery'], function() {
     A link between two nodes
    */
   var Link = (function() {
-    function Link(sourceNode, targetNode, value, weight) {
+    function Link(sourceNode, targetNode, value) {
       this.sourceNode = sourceNode;
       this.targetNode = targetNode;
       this.value = value;
-      this.weight = weight;
     }
 
     Link.prototype.getSource = function() {
@@ -160,7 +159,7 @@ define(['./lib/jquery/dist/jquery'], function() {
       nodeSpacing: 50,
       nodePadding: 10,
       nodeWidth: 100,
-      nodeHeight: 100
+      maxNodeHeight: 250
     };
 
     function Mesh(data, opts) {
@@ -182,7 +181,6 @@ define(['./lib/jquery/dist/jquery'], function() {
       var layers = this.layers,
           points = this.points
           links = this.links;
-
       /**
         Recursively iterate through the links and their children, creating a new
         layer for each depth, populating it with nodes.
@@ -190,8 +188,7 @@ define(['./lib/jquery/dist/jquery'], function() {
       var expandLinks = function(linkArr, depth) {
         var sourceLayer = layers[depth],
             nextLevel = depth+1,
-            targetLayer = layers[nextLevel],
-            weightRatio = this.opts.nodeHeight;
+            targetLayer = layers[nextLevel]
 
         // if we haven't yet worked at this depth, create a new layer
         if (sourceLayer == void 0) {
@@ -222,7 +219,7 @@ define(['./lib/jquery/dist/jquery'], function() {
           }
 
           // create the link
-          link = new Link(sourceNode, targetNode, linkAttrs.value, );
+          link = new Link(sourceNode, targetNode, linkAttrs.value);
           links.push(link);
 
           // assign the link to the inputs of the source node
@@ -239,6 +236,23 @@ define(['./lib/jquery/dist/jquery'], function() {
       }
 
       expandLinks(data.links, 0);
+
+      // set node heights
+      var maxCount = 0;
+      this.layers.forEach(function(layer) {
+        layer.nodes.forEach(function(node) {
+          if (node && maxCount < node.count()) {
+            maxCount = node.count();
+          }
+        });
+      });
+
+      // set node height range
+      this.nodeHeight = d3
+        .scale
+        .linear()
+        .domain([0, maxCount])
+        .range([0, this.opts.maxNodeHeight]);
     };
 
     Mesh.prototype.recalculatePositions = function() {
@@ -258,11 +272,12 @@ define(['./lib/jquery/dist/jquery'], function() {
         layer.nodes.filter(function(node) {
           return node;
         }).forEach(function(node, nodeIdx) {
+          var height = _this.nodeHeight(node.count());
           node.position = {
             x: 0,
-            y: (nodeIdx * (_this.opts.nodeHeight + _this.opts.nodeSpacing)),
+            y: (nodeIdx * (height + _this.opts.nodeSpacing)),
             width: _this.opts.nodeWidth,
-            height: _this.opts.nodeHeight,
+            height: height,
             gutter: _this.opts.nodeSpacing
           };
         });

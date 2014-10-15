@@ -1,15 +1,23 @@
-require(['../lib/d3/d3', '../linear-mesh'], function(d3, Mesh) {
-
-  var mesh = new Mesh(data);
-
+require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
   var width = 800,
-      height = 1000,
-      nodeWidth = 100,
-      nodeHeight = 100,
-      nodePadding = 10,
-      nodeSpacing = 50;
+    height = 1000,
+    nodeWidth = 100,
+    maxNodeHeight = 300,
+    nodePadding = 10,
+    nodeSpacing = 50,
+    mesh,
+    svg,
+    node,
+    links;
 
-  var svg = d3.select("body")
+  mesh = new Mesh(window.data, {
+    nodeWidth: nodeWidth,
+    maxNodeHeight: maxNodeHeight,
+    nodePadding: nodePadding,
+    nodeSpacing: nodeSpacing
+  });
+
+  svg = d3.select("body")
     .append("svg")
       .attr("width", width)
       .attr("height", height)
@@ -19,7 +27,7 @@ require(['../lib/d3/d3', '../linear-mesh'], function(d3, Mesh) {
         y: nodeSpacing
       });
 
-  var layer = svg
+  layer = svg
     .selectAll('.layer')
       .data(mesh.layers)
       .enter()
@@ -31,7 +39,7 @@ require(['../lib/d3/d3', '../linear-mesh'], function(d3, Mesh) {
         }
       });
 
-  var node = layer
+  node = layer
     .selectAll('.node')
       .data(function(layer) {
         // compact our array here - the indexes correspond to the initial Point index in the data so aren't necessarily 0-indexed
@@ -47,8 +55,8 @@ require(['../lib/d3/d3', '../linear-mesh'], function(d3, Mesh) {
     .attr({
       x: function(node) { return node.position.x; },
       y: function(node) { return node.position.y; },
-      width: 100,
-      height: 100
+      width: function(node) { return node.position.width; },
+      height:  function(node) { return mesh.nodeHeight(node.count()); },
     });
 
   node.append('text')
@@ -60,7 +68,7 @@ require(['../lib/d3/d3', '../linear-mesh'], function(d3, Mesh) {
       return node.point.name + ': ' + node.count();
     });
 
-  var links = node
+  links = node
     .selectAll('.link')
       .data(function(node) {
         return node.outputs;
@@ -74,5 +82,4 @@ require(['../lib/d3/d3', '../linear-mesh'], function(d3, Mesh) {
         stroke: '#555',
         'stroke-width': function(link) { return link.weight; }
       });
-
 });
