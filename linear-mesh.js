@@ -156,24 +156,34 @@ define(['./lib/jquery/dist/jquery'], function() {
   var Layer = (function(Node) {
     function Layer(depth) {
       this.depth = depth;
-      this.nodes = [];
+      this.indexedNodes = [];
+      this.nodes = []
     }
 
     Layer.prototype.addNode = function(index, node) {
       if (node instanceof Node) {
-        this.nodes[index] = node;
+        this.indexedNodes[index] = node;
+        this.nodes.push(node);
       } else {
         console.error(node, 'is not a node');
       }
     };
 
     Layer.prototype.getNode = function(index) {
-      return this.nodes[index];
+      return this.indexedNodes[index];
     };
 
     Layer.prototype.removeNode = function(node) {
-      var indexOfNode = this.nodes.indexOf(node);
-      delete this.nodes[indexOfNode];
+      // remove from the indexed list
+      var indexOfNode = this.indexedNodes.indexOf(node);
+      delete this.indexedNodes[indexOfNode];
+
+      // then remove from the unindexed list
+      indexOfNode = this.nodes.indexOf(node);
+      this.nodes = this.nodes
+        .slice(0,indexOfNode)
+        .concat(this.nodes.slice(indexOfNode+1));
+
       return node;
     };
 
@@ -313,16 +323,17 @@ define(['./lib/jquery/dist/jquery'], function() {
           return node;
         });
 
+        var offset = 0;
+
         nodes.forEach(function(node, nodeIdx) {
           var height = _this.nodeHeight(node.count()),
-              previousNode = nodes[nodeIdx-1],
-              offset = previousNode ? previousNode.position.height : 0;
+              previousNode = nodes[nodeIdx-1];
 
-
+          offset += (previousNode ? previousNode.position.height + _this.opts.nodeSpacingY : 0);
 
           node.position = {
             x: 0,
-            y: (nodeIdx * (offset + _this.opts.nodeSpacingY)),
+            y: offset,
             width: _this.opts.nodeWidth,
             height: height,
             gutter: _this.opts.nodeSpacingX

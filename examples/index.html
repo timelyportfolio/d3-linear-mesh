@@ -30,34 +30,56 @@
       ],
       links: [{
         source: 0,
+        target: 5,
+        value: 8
+      },{
+        source: 0,
         target: 1,
-        value: 20,
+        value: 12,
         links: [{
           source: 1,
           target: 2,
-          value: 10,
+          value: 5,
           links: [{
             source: 2,
+            target: 5,
+            value: 3
+          },{
+            source: 2,
             target: 4,
-            value: 10,
+            value: 2,
             links: [{
               source: 4,
               target: 5,
-              value: 15,
+              value: 5,
             }]
           }]
         },{
           source: 1,
           target: 3,
-          value: 10,
+          value: 7,
           links: [{
             source: 3,
             target: 4,
-            value: 5
+            value: 3
           },{
             source: 3,
-            target: 5,
-            value: 5
+            target: 0,
+            value: 2,
+            links: [{
+              source: 0,
+              target: 5,
+              value: 2
+            }]
+          },{
+            source: 3,
+            target: 1,
+            value: 2,
+            links: [{
+              source: 1,
+              target: 5,
+              value: 2
+            }]
           }]
         }]
       }]
