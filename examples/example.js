@@ -1,5 +1,5 @@
 /*global: d3*/
-require('../linear-mesh'], function (linearMesh) {
+require(['../linear-mesh'], function (linearMesh) {
 
   var Mesh = linearMesh.default;
 
