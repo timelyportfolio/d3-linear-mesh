@@ -1,4 +1,4 @@
-define(['./lib/jquery/dist/jquery'], function() {
+define(['jquery'], function($) {
 
   /**
     Represents a POI.
@@ -232,7 +232,8 @@ define(['./lib/jquery/dist/jquery'], function() {
       this.layers = [];
       this.links = [];
       this.data = data;
-      this.opts = jQuery.extend({}, defaultOpts, opts);
+      // TODO: refactor away from jQuery - this is the only time we using it...
+      this.opts = $.extend({}, defaultOpts, opts);
 
       this.points = data.points.map(function(point, index) {
         point.index = index;
