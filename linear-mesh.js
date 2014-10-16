@@ -309,7 +309,7 @@ define('linear-mesh', ['exports'], function(exports) {
         });
       }
 
-      expandLinks(data.links, 0);
+      expandLinks(this.data.links, 0);
     };
 
     Mesh.prototype.recalculateNodeSizes = function() {
