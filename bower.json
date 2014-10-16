@@ -13,6 +13,7 @@
   "directory": "lib",
   "keywords": [
     "d3",
+    "layout",
     "mesh"
   ],
   "license": "MIT",
@@ -24,9 +25,8 @@
     "test",
     "tests"
   ],
-  "dependencies": {
-    "d3": "~3.4.12",
+  "devDependencies": {
     "requirejs": "~2.1.15",
-    "jquery": "~2.1.1"
+    "d3": "~3.4.12"
   }
 }

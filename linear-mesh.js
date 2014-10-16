@@ -1,4 +1,5 @@
-define(['jquery'], function($) {
+/*global: d3*/
+define(['exports'], function(exports) {
 
   /**
     Represents a POI.
@@ -232,8 +233,13 @@ define(['jquery'], function($) {
       this.layers = [];
       this.links = [];
       this.data = data;
-      // TODO: refactor away from jQuery - this is the only time we using it...
-      this.opts = $.extend({}, defaultOpts, opts);
+
+      this.opts = function(defaults, overrides) {
+        var opts = {};
+        for (key in defaults) { opts[key] = defaults[key]; }
+        for (key in overrides) { opts[key] = overrides[key]; }
+        return opts;
+      }(defaultOpts, opts)
 
       this.points = data.points.map(function(point, index) {
         point.index = index;
@@ -376,5 +382,5 @@ define(['jquery'], function($) {
     return Mesh;
   })(Point, Link);
 
-  return Mesh;
+  exports.default = Mesh;
 });

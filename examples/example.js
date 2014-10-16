@@ -1,4 +1,8 @@
-require(['../lib/d3/d3', '../linear-mesh'], function (d3, Mesh) {
+/*global: d3*/
+require('../linear-mesh'], function (linearMesh) {
+
+  var Mesh = linearMesh.default;
+
   var width = 1200,
     height = 1000,
     nodeWidth = 100,
