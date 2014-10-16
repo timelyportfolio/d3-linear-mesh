@@ -62,7 +62,7 @@ define(['./lib/jquery/dist/jquery'], function() {
         // control point 2
         xc1+','+y1,
         // top right
-        ' '+x1+','+y1,
+        x1+','+y1,
         // bottom right
         'L '+x1+','+y2,
         // curving back to the left-hand node
@@ -71,7 +71,7 @@ define(['./lib/jquery/dist/jquery'], function() {
         // control point 2
         xc0+','+y3,
         // bottom left
-        ' '+x0+','+y3,
+        x0+','+y3,
         // close the path
         'Z'
       ].join(' ');
