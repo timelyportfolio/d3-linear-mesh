@@ -1,5 +1,5 @@
 /*global: d3*/
-define(['exports'], function(exports) {
+define('linear-mesh', ['exports'], function(exports) {
 
   /**
     Represents a POI.

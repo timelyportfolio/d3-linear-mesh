@@ -4,7 +4,13 @@
   <meta charset="utf-8">
   <script src="../lib/d3/d3.js"></script>
   <script src="../lib/requirejs/require.js" data-main="example"></script>
-
+  <script type="text/javascript">
+    requirejs.config({
+      paths: {
+        'linear-mesh': '../linear-mesh'
+      }
+    });
+  </script>
   <style type="text/css" media="screen">
 
     rect.nodeHeader {
