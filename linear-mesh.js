@@ -337,17 +337,12 @@ define('linear-mesh', ['exports'], function(exports) {
       var nodeWidth = (this.opts.containerWidth / ((layerCount * 2) -1));
       nodeWidth = Math.min(this.opts.maxNodeWidth, Math.max(this.opts.minNodeWidth, nodeWidth));
 
-
+      // set node spacing
       var nodeSpacingX = nodeWidth;
       while ((this.opts.containerWidth > nodeWidth * (layerCount - 1)) &&
               this.opts.containerWidth <= ((nodeWidth * layerCount) + (nodeSpacingX * (layerCount - 1)))) {
 
-        var nextIter = Math.max(this.opts.minNodeSpacingX, nodeSpacingX -= 10);
-        if (nodeSpacingX <= this.opts.minNodeSpacingX) {
-          break;
-        } else {
-          nodeSpacingX = nextIter;
-        }
+        nodeSpacingX = Math.max(this.opts.minNodeSpacingX, nodeSpacingX -= 10);
       }
 
       this.opts.nodeSpacingX = nodeSpacingX;
