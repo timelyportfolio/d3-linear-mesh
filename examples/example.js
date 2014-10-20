@@ -79,8 +79,6 @@ require(['linear-mesh'], function (linearMesh) {
       .attr("in", "SourceGraphic");
 
 
-
-
   layer = svg
     .selectAll('.layer')
       .data(mesh.layers)
@@ -126,35 +124,17 @@ require(['linear-mesh'], function (linearMesh) {
   var rect = tipContainer.append('rect');
   rect.style('filter', 'url(#drop-shadow)');
 
-  linkContainer.on('mouseenter', function(link) {
-    tipContainer.style('opacity', 1);
-    tipContainer.select('.description').remove();
 
-    var lines = [],
-        description = tipContainer.append('g')
-          .attr('class', 'description');
-
-    function addLine(text, classes) {
-      var line = description.append('text')
-                  .attr('class','highlight poi-name')
-                  .html(text)
-      lines.push(line);
-    }
-
-
-    addLine(link.sourceNode.point.name, 'highlight poi-name text-uppercase');
-    addLine('to', 'text-uppercase');
-    addLine(link.targetNode.point.name, 'highlight poi-name text-uppercase');
-
-
-    var textHeight = lines.reduce(function(sum, line, index) {
+  var tipText;
+  function resizeTip() {
+    var textHeight = tipText.reduce(function(sum, line, index) {
       var bbox = line.node().getBBox(),
         height = bbox.height;
       line.attr('y', nodePadding + (height*(index+1)));
       return sum + height;
     }, (nodePadding*2));
 
-    var textWidth = lines.reduce(function(max, line, index) {
+    var textWidth = tipText.reduce(function(max, line, index) {
       var bbox = line.node().getBBox(),
         width = bbox.width;
       line.attr('x', nodePadding);
@@ -165,20 +145,56 @@ require(['linear-mesh'], function (linearMesh) {
       height: textHeight,
       width: textWidth
     });
-  });
+  }
 
-  linkContainer.on('mousemove', function() {
+  function displayTip(lines) {
+    tipText = [];
+    tipContainer.style('opacity', 1);
+    tipContainer.select('.description').remove();
+    tipDescriptionNode = tipContainer.append('g')
+      .attr('class', 'description');
+
+    lines.forEach(function(line) {
+      addLine(line[0], line[1]);
+    });
+
+    resizeTip();
+  }
+
+  function repositionTip() {
     var position = d3.mouse(svg.node());
     tipContainer.attr('transform', 'translate('+(position[0]+10)+','+(position[1]+10)+')');
+  }
+
+  function hideTip() {
+    tipContainer.style('opacity', 0);
+  }
+
+  var tipDescriptionNode;
+  function addLine(text, classes) {
+    var line = tipDescriptionNode.append('text')
+                .attr('class','highlight poi-name')
+                .html(text)
+    tipText.push(line);
+  }
+
+
+  linkContainer.on('mouseenter', function(link) {
+    displayTip([
+      [link.sourceNode.point.name, 'highlight poi-name text-uppercase'],
+      ['to', 'text-uppercase'],
+      [link.targetNode.point.name, 'highlight poi-name text-uppercase']
+    ]);
   });
+
+  linkContainer.on('mousemove', repositionTip);
 
   linkContainer.on('mouseleave', function() {
     tipContainer.style('opacity', 0);
   });
 
-
   // node background
-  node.append('rect')
+  var nodeBlock = node.append('rect')
     .attr({
       'class': 'nodeBg',
       x: function(node) { return node.position.x; },
@@ -218,4 +234,22 @@ require(['linear-mesh'], function (linearMesh) {
     .text(function(node) {
       return node.count();
     });
+
+  nodeBlock.on('mouseenter', function(node) {
+
+    var lines = [[node.point.name, 'highlight poi-name text-uppercase']];
+
+    node.outputs.forEach(function(link) {
+      lines.push(['to', 'text-uppercase']);
+      lines.push([link.targetNode.point.name, 'highlight poi-name text-uppercase']);
+    });
+
+    displayTip(lines);
+  });
+
+  nodeBlock.on('mousemove', repositionTip);
+
+  nodeBlock.on('mouseleave', hideTip);
+
+
 });
