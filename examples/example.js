@@ -15,7 +15,8 @@ require(['linear-mesh'], function (linearMesh) {
     mesh,
     svg,
     node,
-    links;
+    linkContainer,
+    link;
 
   mesh = new Mesh(window.data, {
     nodeWidth: nodeWidth,
@@ -35,6 +36,50 @@ require(['linear-mesh'], function (linearMesh) {
         x: nodeSpacingX,
         y: nodeSpacingY
       });
+
+
+  // filters go in defs element
+  var defs = svg.append("defs");
+
+  // create filter with id #drop-shadow
+  // height=130% so that the shadow is not clipped
+  var filter = defs.append("filter")
+    .attr({
+      id: 'drop-shadow',
+      height: '130%',
+      width: '130%'
+    });
+
+  filter.append("feGaussianBlur")
+    .attr({
+      'in': 'SourceAlpha',
+      stdDeviation: 2,
+      result: 'blur'
+    });
+
+  filter.append("feOffset")
+    .attr({
+      'in': 'blur',
+      dx: 3,
+      dy: 3,
+      result: 'offsetBlur'
+    });
+
+  filter.append('feComponentTransfer')
+    .append('feFuncA')
+      .attr({
+        type: 'linear',
+        slope: 0.3
+      });
+
+  var feMerge = filter.append("feMerge");
+
+  feMerge.append("feMergeNode");
+  feMerge.append("feMergeNode")
+      .attr("in", "SourceGraphic");
+
+
+
 
   layer = svg
     .selectAll('.layer')
@@ -60,18 +105,77 @@ require(['linear-mesh'], function (linearMesh) {
     .append('g')
       .attr('class', 'node');
 
-  links = node
+  linkContainer = node
     .selectAll('.link')
       .data(function(node) {
         return node.outputs;
       })
       .enter()
-    .append('path')
-      .attr({
-        'class': 'link',
-        d: function(link) { return link.path(); },
-        fill: '#555'
-      });
+    .append('g').attr('class', 'link-container');
+
+  link = linkContainer.append('path')
+    .attr({
+      'class': 'link',
+      d: function(link) { return link.path(); },
+      fill: '#555'
+    });
+
+  var tipContainer = svg.append('g')
+    .attr('class','tip');
+
+  var rect = tipContainer.append('rect');
+  rect.style('filter', 'url(#drop-shadow)');
+
+  linkContainer.on('mouseenter', function(link) {
+    tipContainer.style('opacity', 1);
+    tipContainer.select('.description').remove();
+
+    var lines = [],
+        description = tipContainer.append('g')
+          .attr('class', 'description');
+
+    function addLine(text, classes) {
+      var line = description.append('text')
+                  .attr('class','highlight poi-name')
+                  .html(text)
+      lines.push(line);
+    }
+
+
+    addLine(link.sourceNode.point.name, 'highlight poi-name text-uppercase');
+    addLine('to', 'text-uppercase');
+    addLine(link.targetNode.point.name, 'highlight poi-name text-uppercase');
+
+
+    var textHeight = lines.reduce(function(sum, line, index) {
+      var bbox = line.node().getBBox(),
+        height = bbox.height;
+      line.attr('y', nodePadding + (height*(index+1)));
+      return sum + height;
+    }, (nodePadding*2));
+
+    var textWidth = lines.reduce(function(max, line, index) {
+      var bbox = line.node().getBBox(),
+        width = bbox.width;
+      line.attr('x', nodePadding);
+      return Math.max(width+(nodePadding*2), max);
+    }, nodePadding*2);
+
+    tipContainer.select('rect').attr({
+      height: textHeight,
+      width: textWidth
+    });
+  });
+
+  linkContainer.on('mousemove', function() {
+    var position = d3.mouse(svg.node());
+    tipContainer.attr('transform', 'translate('+(position[0]+10)+','+(position[1]+10)+')');
+  });
+
+  linkContainer.on('mouseleave', function() {
+    tipContainer.style('opacity', 0);
+  });
+
 
   // node background
   node.append('rect')
