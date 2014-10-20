@@ -224,9 +224,11 @@ define('linear-mesh', ['exports'], function(exports) {
       nodeSpacingX: 50,
       nodeSpacingY: 50,
       nodePadding: 10,
-      nodeWidth: 100,
+      minNodeWidth: 110,
+      maxNodeWidth: 200,
       maxNodeHeight: 250,
-      minNodeHeight: 20
+      minNodeHeight: 20,
+      containerWidth: 1000
     };
 
     function Mesh(data, opts) {
@@ -313,7 +315,7 @@ define('linear-mesh', ['exports'], function(exports) {
     };
 
     Mesh.prototype.recalculateNodeSizes = function() {
-      // set node heights
+      // get maximum node visit count
       var maxCount = 0;
       this.layers.forEach(function(layer) {
         layer.nodes.forEach(function(node) {
@@ -328,6 +330,14 @@ define('linear-mesh', ['exports'], function(exports) {
         .linear()
         .domain([0, maxCount])
         .range([0, this.opts.maxNodeHeight]);
+
+
+      // set node widths
+      var layerCount = this.layers.length;
+      var nodeWidth = (this.opts.containerWidth / layerCount) - this.opts.nodeSpacingX;
+      nodeWidth = Math.max(nodeWidth, this.opts.minNodeWidth);
+
+      this.opts.nodeWidth = nodeWidth;
     };
 
     Mesh.prototype.recalculatePositions = function() {

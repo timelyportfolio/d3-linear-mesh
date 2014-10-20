@@ -3,11 +3,12 @@ require(['linear-mesh'], function (linearMesh) {
 
   var Mesh = linearMesh.default;
 
-  var width = 1200,
+  var width = document.body.clientWidth,
     height = 1000,
-    nodeWidth = 100,
-    maxNodeHeight = 250,
+    minNodeWidth = 110,
+    maxNodeWidth = 200,
     minNodeHeight = 70,
+    maxNodeHeight = 250,
     nodePadding = 10,
     nodeSpacingX = 100,
     nodeSpacingY = 50,
@@ -19,12 +20,14 @@ require(['linear-mesh'], function (linearMesh) {
     link;
 
   mesh = new Mesh(window.data, {
-    nodeWidth: nodeWidth,
     maxNodeHeight: maxNodeHeight,
     minNodeHeight: minNodeHeight,
+    maxNodeWidth: maxNodeHeight,
+    minNodeWidth: minNodeHeight,
     nodePadding: nodePadding,
     nodeSpacingX: nodeSpacingX,
-    nodeSpacingY: nodeSpacingY
+    nodeSpacingY: nodeSpacingY,
+    containerWidth: width
   });
 
   svg = d3.select("body")
@@ -248,8 +251,5 @@ require(['linear-mesh'], function (linearMesh) {
   });
 
   nodeBlock.on('mousemove', repositionTip);
-
   nodeBlock.on('mouseleave', hideTip);
-
-
 });
