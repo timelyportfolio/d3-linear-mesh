@@ -6,11 +6,11 @@ require(['linear-mesh'], function (linearMesh) {
   var width = document.body.clientWidth,
     height = 1000,
     minNodeWidth = 110,
-    maxNodeWidth = 200,
+    maxNodeWidth = 120,
     minNodeHeight = 70,
     maxNodeHeight = 250,
     nodePadding = 10,
-    nodeSpacingX = 100,
+    minNodeSpacingX = 20,
     nodeSpacingY = 50,
     nodeHeaderHeight = 25,
     mesh,
@@ -20,12 +20,12 @@ require(['linear-mesh'], function (linearMesh) {
     link;
 
   mesh = new Mesh(window.data, {
-    maxNodeHeight: maxNodeHeight,
     minNodeHeight: minNodeHeight,
-    maxNodeWidth: maxNodeHeight,
+    maxNodeHeight: maxNodeHeight,
     minNodeWidth: minNodeHeight,
+    maxNodeWidth: maxNodeWidth,
     nodePadding: nodePadding,
-    nodeSpacingX: nodeSpacingX,
+    minNodeSpacingX: minNodeSpacingX,
     nodeSpacingY: nodeSpacingY,
     containerWidth: width
   });
@@ -36,7 +36,7 @@ require(['linear-mesh'], function (linearMesh) {
       .attr("height", height)
     .append("g")
       .attr({
-        x: nodeSpacingX,
+        x: mesh.opts.nodeSpacingX,
         y: nodeSpacingY
       });
 
