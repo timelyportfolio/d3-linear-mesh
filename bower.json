@@ -1,7 +1,7 @@
 {
   "name": "linear-mesh",
   "main": "linear-mesh.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/dandehavilland/d3-linear-mesh",
   "authors": [
     "Dan de Havilland <dan@dandehavilland.com>"
