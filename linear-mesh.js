@@ -133,7 +133,7 @@ define('linear-mesh', ['exports'], function(exports) {
         pos = this.position,
         offset = 0;
 
-      // inputs, set y1
+      // inputs, set y1 & y2
       this.inputs.forEach(function(link) {
         var cover = (link.value / _this.count()) * pos.height,
             y1 = pos.y,
@@ -141,9 +141,12 @@ define('linear-mesh', ['exports'], function(exports) {
         link.position.y1 = offset + y1;
         link.position.y2 = offset + y2;
         offset += cover;
+
+        // fill in the blanks
+        link.calculatePosition();
       });
 
-      // outputs, set y0
+      // outputs, set y0 & y3
       offset = 0;
       this.outputs.forEach(function(link) {
         var cover = (link.value / _this.count()) * pos.height,
@@ -152,6 +155,9 @@ define('linear-mesh', ['exports'], function(exports) {
         link.position.y0 = offset + y0;
         link.position.y3 = offset + y3;
         offset += cover;
+
+        // fill in the blanks
+        link.calculatePosition();
       });
     };
 
