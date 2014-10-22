@@ -181,10 +181,12 @@ define('linear-mesh', ['exports'], function(exports) {
     Groups a set of nodes, handles depth management
    */
   var Layer = (function(Node) {
+    var refCounter = 0;
     function Layer(depth) {
       this.depth = depth;
       this.indexedNodes = [];
-      this.nodes = []
+      this.nodes = [];
+      this._ref = ++refCounter;
     }
 
     Layer.prototype.addNode = function(index, node) {
