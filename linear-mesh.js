@@ -41,8 +41,8 @@ define('linear-mesh', ['exports'], function(exports) {
     Link.prototype.calculatePosition = function() {
       var s = this.sourceNode.position;
 
-      this.position.x0 = (s.x + s.width),
-      this.position.x1 = (s.x+s.width+s.gutter);
+      this.position.x0 = (s.x + s.width);
+      this.position.x1 = (s.x + s.width + s.gutter);
     };
 
     Link.prototype.path = function() {
