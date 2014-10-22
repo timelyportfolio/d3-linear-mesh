@@ -38,41 +38,43 @@ define('linear-mesh', ['exports'], function(exports) {
       return this.targetNode;
     };
 
+    Link.prototype.calculatePosition = function() {
+      var s = this.sourceNode.position;
+
+      this.position.x0 = (s.x + s.width),
+      this.position.x1 = (s.x+s.width+s.gutter);
+    };
+
     Link.prototype.path = function() {
-      var sourceNode = this.sourceNode,
-        targetNode = this.targetNode,
-        s = sourceNode.position,
-        t = targetNode.position,
+      var p = this.position,
         curvature = 0.35,
-        x0 = (s.x + s.width),
-        y0 = this.position.y0,
-        x1 = (s.x+s.width+s.gutter),
-        y1 = this.position.y1,
-        xi = d3.interpolateNumber(x0,x1),
-        xc0 = xi(curvature),
-        xc1 = xi(1-curvature),
-        y2 = this.position.y2,
-        y3 = this.position.y3;
+        xi, xc0, xc1;
+
+      this.calculatePosition();
+
+      xi = d3.interpolateNumber(p.x0, p.x1);
+      xc0 = xi(curvature);
+      xc1 = xi(1-curvature);
 
       return [
         // top left
-        'M '+x0+','+y0,
+        'M '+p.x0+','+p.y0,
         // curving to the right-hand node
         // control point 1
-        'C'+xc0+','+y0,
+        'C'+xc0+','+p.y0,
         // control point 2
-        xc1+','+y1,
+        xc1+','+p.y1,
         // top right
-        x1+','+y1,
+        p.x1+','+p.y1,
         // bottom right
-        'L '+x1+','+y2,
+        'L '+p.x1+','+p.y2,
         // curving back to the left-hand node
         // control point 1
-        'C'+xc1+','+y2,
+        'C'+xc1+','+p.y2,
         // control point 2
-        xc0+','+y3,
+        xc0+','+p.y3,
         // bottom left
-        x0+','+y3,
+        p.x0+','+p.y3,
         // close the path
         'Z'
       ].join(' ');
