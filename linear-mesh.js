@@ -344,7 +344,7 @@ define('linear-mesh', ['exports'], function(exports) {
 
       // set node widths
       var layerCount = this.layers.length;
-      var nodeWidth = (this.opts.containerWidth / ((layerCount * 2) -1));
+      var nodeWidth = Math.round(this.opts.containerWidth / ((layerCount * 2) -1));
       nodeWidth = Math.min(this.opts.maxNodeWidth, Math.max(this.opts.minNodeWidth, nodeWidth));
 
       // set node spacing
