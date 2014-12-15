@@ -253,7 +253,12 @@ define('linear-mesh', ['exports'], function(exports) {
         return opts;
       }(defaultOpts, opts)
 
-      this.points = data.points.map(function(point, index) {
+      // the difference between a Point and a Node:
+      // - A Point is spatial: it represents a single re-visitable point
+      // - A Node is temporal: it contains a reference to a Point and its inputs/outputs during a certain timeframe.
+
+      // Note: The provided should use `nodes` at the top level to be in-line with existing sankey and deriviative implementations.
+      this.points = data.nodes.map(function(point, index) {
         point.index = index;
         return new Point(point);
       });
