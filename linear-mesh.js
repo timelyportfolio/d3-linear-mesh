@@ -291,6 +291,8 @@ define('linear-mesh', ['exports'], function(exports) {
           targetLayer = layers[nextLevel] = new Layer(nextLevel);
         }
 
+        if (linkArr == void 0) { return; }
+
         // Assign source nodes into layers
         linkArr.forEach(function(linkAttrs) {
           var sourceNode = sourceLayer.getNode(linkAttrs.source),
